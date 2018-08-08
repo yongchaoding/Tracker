@@ -68,6 +68,14 @@ def imageROI(image, ROIboundbox):
     #cv2.imshow('image ROI', imageROI);
     return imageROI;
 
+def TrackletAddDetection(tracklet, boundbox):
+    tempboundbox = tracklet.Boundbox;
+    print(tempboundbox)
+    tempboundbox.append(boundbox);
+    print(tempboundbox)
+    tracklet.Boundbox = tempboundbox;
+    return tracklet;
+
 class tracklet:
     def __init__(self):
         tracklet.ID = 0;
@@ -92,7 +100,9 @@ def CostFunctionCalc(image, boundboxs):
         for boundbox in boundboxs:
             Tracklet = tracklet();
             Tracklet.ID = ID_Generate;
-            Tracklet.Boundbox.append([boundbox[0:4]]);
+            TrackletAddDetection(Tracklet, boundbox[0:4])
+            #(Tracklet.Boundbox).append(boundbox[0:4]);
+            #(Tracklet.Boundbox) = [boundbox[0:4]];
             Tracklet.Status = 0;
             Tracklets.append(Tracklet);
             ID_Generate += 1;
@@ -105,21 +115,18 @@ def CostFunctionCalc(image, boundboxs):
                 
                 accuracy = detection[4]
                 accuracyCost = detectionCostFunction(accuracy);
-                #print(Tracklet.Boundbox[0]);
-                #print(Tracklet.Boundbox[-1]);
-                posOrigin = posCalc(Tracklet.Boundbox[-1][0]);
+                
+                posOrigin = posCalc(Tracklet.Boundbox[-1]);
                 posLatest = posCalc(detection[0:4])
-                #print(posOrigin);
-                #print(posLatest);
                 posCost = posCostFunction(posLatest, posOrigin);
 
-                sizeCost = BoundboxSizeCostFunction(detection[0:4], Tracklet.Boundbox[-1][0])
+                sizeCost = BoundboxSizeCostFunction(detection[0:4], Tracklet.Boundbox[-1])
 
-                TrackletImageROI = imageROI(imageOrigin, Tracklet.Boundbox[-1][0]);
+                TrackletImageROI = imageROI(imageOrigin, Tracklet.Boundbox[-1]);
                 DetectionImageROI = imageROI(image, detection[0:4]);
 
                 rgbHistCost = RGBHistCostFunction(DetectionImageROI, TrackletImageROI);
 
-                print('Tracklet ID: ', Tracklet.ID, 'Detection Num: ', detectionNum, ' posCost', posCost, 'Size Cost: ', sizeCost, 'RGBHist Cost:', rgbHistCost);
+                print('ID: ', Tracklet.ID, 'Num: ', detectionNum, ' posCost', posCost, 'Size Cost: ', sizeCost, 'RGBHist Cost:', rgbHistCost);
 
     return Tracklets;
