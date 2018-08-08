@@ -15,7 +15,7 @@ def ImageLoad(ImagePath):
     #logging.info('Image: %s', imgList)
     logging.debug('Num of Image: %d', len(imgList))
     for imgName in imgPaths:
-        #logging.debug('Image: %s', imgName)
+        #logging.info('Image: %s', imgName)
         img = cv2.imread(imgName);
         imgList.append(img);
     Num = len(imgList);
@@ -34,12 +34,12 @@ def DetLoad(DetPath):
             break;
         infoList = line.split(',');
         if frameStart == int(infoList[0]):
-            frameDet.append([math.floor(float(infoList[2])), math.floor(float(infoList[3])), math.floor(float(infoList[4])), math.floor(float(infoList[5]))])
+            frameDet.append([math.floor(float(infoList[2])), math.floor(float(infoList[3])), math.floor(float(infoList[4])), math.floor(float(infoList[5])), float(infoList[6])])
         else:
             frameStart += 1;
             DetList.append(frameDet);
             frameDet = [];
-            frameDet.append([math.floor(float(infoList[2])), math.floor(float(infoList[3])), math.floor(float(infoList[4])), math.floor(float(infoList[5]))])
+            frameDet.append([math.floor(float(infoList[2])), math.floor(float(infoList[3])), math.floor(float(infoList[4])), math.floor(float(infoList[5])), float(infoList[6])])
     logging.debug('Frame detection: %s', DetList[0]);
     logging.info('Read %d frame detection', len(DetList));
     return DetList;
